@@ -19,10 +19,17 @@ import AdminDashboard from "./pages/admin/Dashboard";
 // Pages PME
 import PMEDashboard from "./pages/pme/Dashboard";
 import SubmitClaim from "./pages/pme/SubmitClaim";
+import Claims from "./pages/pme/Claims";
+import PMEProfile from "./pages/pme/Profile";
+import PMEContact from "./pages/pme/Contact";
 
 // Pages Investisseur
 import InvestorDashboard from "./pages/investor/Dashboard";
 import Opportunities from "./pages/investor/Opportunities";
+import Portfolio from "./pages/investor/Portfolio";
+import History from "./pages/investor/History";
+import InvestorProfile from "./pages/investor/Profile";
+import InvestorContact from "./pages/investor/Contact";
 
 // Page 404
 import NotFound from "./pages/NotFound";
@@ -71,6 +78,30 @@ const App = () => (
                 </AppLayout>
               } 
             />
+            <Route 
+              path="/pme/claims" 
+              element={
+                <AppLayout requiredRole="pme">
+                  <Claims />
+                </AppLayout>
+              } 
+            />
+            <Route 
+              path="/pme/profile" 
+              element={
+                <AppLayout requiredRole="pme">
+                  <PMEProfile />
+                </AppLayout>
+              } 
+            />
+            <Route 
+              path="/pme/contact" 
+              element={
+                <AppLayout requiredRole="pme">
+                  <PMEContact />
+                </AppLayout>
+              } 
+            />
             
             {/* Routes Investisseur */}
             <Route 
@@ -86,6 +117,38 @@ const App = () => (
               element={
                 <AppLayout requiredRole="investor">
                   <Opportunities />
+                </AppLayout>
+              } 
+            />
+            <Route 
+              path="/investor/portfolio" 
+              element={
+                <AppLayout requiredRole="investor">
+                  <Portfolio />
+                </AppLayout>
+              } 
+            />
+            <Route 
+              path="/investor/history" 
+              element={
+                <AppLayout requiredRole="investor">
+                  <History />
+                </AppLayout>
+              } 
+            />
+            <Route 
+              path="/investor/profile" 
+              element={
+                <AppLayout requiredRole="investor">
+                  <InvestorProfile />
+                </AppLayout>
+              } 
+            />
+            <Route 
+              path="/investor/contact" 
+              element={
+                <AppLayout requiredRole="investor">
+                  <InvestorContact />
                 </AppLayout>
               } 
             />

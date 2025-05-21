@@ -64,8 +64,8 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				// Ajout des couleurs spécifiques pour la plateforme de créances
-				"finance-blue": "#1A365D",
-				"finance-orange": "#F59E0B",
+				"finance-blue": "#0046b8",
+				"finance-red": "#d81b60",
 				"finance-gray-light": "#F3F4F6",
 				"finance-gray-medium": "#9CA3AF",
 				"finance-gray-dark": "#4B5563",

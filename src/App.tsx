@@ -15,6 +15,12 @@ import AppLayout from "./components/layout/AppLayout";
 
 // Pages Admin
 import AdminDashboard from "./pages/admin/Dashboard";
+import AdminPMEs from "./pages/admin/PMEs";
+import AdminInvestors from "./pages/admin/Investors";
+import AdminClaims from "./pages/admin/Claims";
+import AdminTransactions from "./pages/admin/Transactions";
+import AdminNotifications from "./pages/admin/Notifications";
+import AdminSettings from "./pages/admin/Settings";
 
 // Pages PME
 import PMEDashboard from "./pages/pme/Dashboard";
@@ -57,6 +63,54 @@ const App = () => (
               element={
                 <AppLayout requiredRole="admin">
                   <AdminDashboard />
+                </AppLayout>
+              } 
+            />
+            <Route 
+              path="/admin/pmes" 
+              element={
+                <AppLayout requiredRole="admin">
+                  <AdminPMEs />
+                </AppLayout>
+              } 
+            />
+            <Route 
+              path="/admin/investors" 
+              element={
+                <AppLayout requiredRole="admin">
+                  <AdminInvestors />
+                </AppLayout>
+              } 
+            />
+            <Route 
+              path="/admin/claims" 
+              element={
+                <AppLayout requiredRole="admin">
+                  <AdminClaims />
+                </AppLayout>
+              } 
+            />
+            <Route 
+              path="/admin/transactions" 
+              element={
+                <AppLayout requiredRole="admin">
+                  <AdminTransactions />
+                </AppLayout>
+              } 
+            />
+            <Route 
+              path="/admin/notifications" 
+              element={
+                <AppLayout requiredRole="admin">
+                  <AdminNotifications />
+                </AppLayout>
+              } 
+            />
+            <Route 
+              path="/admin/settings" 
+              element={
+                <AppLayout requiredRole="admin">
+                  <AdminSettings />
                 </AppLayout>
               } 
             />

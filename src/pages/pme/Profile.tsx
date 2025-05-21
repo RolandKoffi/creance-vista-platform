@@ -1,140 +1,148 @@
 
 import { useState } from "react";
-import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { toast } from "sonner";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { FileText, Upload } from "lucide-react";
 import { mockPMEs } from "@/data/mock-data";
-import { Upload } from "lucide-react";
+import { toast } from "sonner";
 
 const Profile = () => {
-  const { user } = useAuth();
-  
-  if (!user) return null;
-  
-  // Trouver les données de la PME actuelle
-  const pmeData = mockPMEs.find(pme => pme.id === user.id) || {
-    companyName: "",
-    siret: "",
-    address: "",
-    contactPerson: "",
-    contactEmail: "",
-    contactPhone: "",
-    description: ""
+  // Mock data for logged-in PME
+  const currentPmeId = "pme-1";
+  const pmeData = mockPMEs.find(pme => pme.id === currentPmeId) || {
+    companyName: "TechSolutions SAS",
+    siret: "12345678901234",
+    address: "123 Avenue de la République, 75011 Paris",
+    contactPerson: "Marie Dubois",
+    contactEmail: "contact@techsolutions.fr",
+    contactPhone: "+33123456789",
+    description: "Entreprise spécialisée dans le développement de solutions technologiques B2B."
   };
   
-  const [formData, setFormData] = useState(pmeData);
+  const [pme, setPme] = useState(pmeData);
+  const [isEditing, setIsEditing] = useState(false);
   
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-  
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSave = () => {
     toast.success("Profil mis à jour avec succès");
+    setIsEditing(false);
   };
   
-  const handleFileUpload = () => {
+  const handleUpload = () => {
     toast.success("Document téléchargé avec succès");
   };
   
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">Mon profil</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Profil de l'entreprise</h1>
+        {!isEditing ? (
+          <Button 
+            onClick={() => setIsEditing(true)}
+            variant="outline"
+          >
+            Modifier le profil
+          </Button>
+        ) : (
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              onClick={() => setIsEditing(false)}
+            >
+              Annuler
+            </Button>
+            <Button 
+              onClick={handleSave}
+            >
+              Enregistrer
+            </Button>
+          </div>
+        )}
+      </div>
       
-      <Tabs defaultValue="information">
+      <Tabs defaultValue="company-info">
         <TabsList className="mb-4">
-          <TabsTrigger value="information">Informations générales</TabsTrigger>
-          <TabsTrigger value="documents">Documents légaux</TabsTrigger>
-          <TabsTrigger value="security">Sécurité</TabsTrigger>
+          <TabsTrigger value="company-info">Informations entreprise</TabsTrigger>
+          <TabsTrigger value="documents">Documents</TabsTrigger>
+          <TabsTrigger value="banking">Informations bancaires</TabsTrigger>
         </TabsList>
         
-        <TabsContent value="information">
+        <TabsContent value="company-info">
           <Card>
             <CardHeader>
               <CardTitle>Informations de l'entreprise</CardTitle>
             </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="companyName">Nom de l'entreprise</Label>
-                    <Input 
-                      id="companyName"
-                      name="companyName"
-                      value={formData.companyName}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="siret">SIRET</Label>
-                    <Input 
-                      id="siret"
-                      name="siret"
-                      value={formData.siret}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="contactPerson">Personne de contact</Label>
-                    <Input 
-                      id="contactPerson"
-                      name="contactPerson"
-                      value={formData.contactPerson}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="contactEmail">Email de contact</Label>
-                    <Input 
-                      id="contactEmail"
-                      name="contactEmail"
-                      type="email"
-                      value={formData.contactEmail}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="contactPhone">Téléphone</Label>
-                    <Input 
-                      id="contactPhone"
-                      name="contactPhone"
-                      value={formData.contactPhone}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="address">Adresse</Label>
-                    <Input 
-                      id="address"
-                      name="address"
-                      value={formData.address}
-                      onChange={handleChange}
-                    />
-                  </div>
-                </div>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="description">Description de l'entreprise</Label>
-                  <Textarea 
-                    id="description"
-                    name="description"
-                    rows={4}
-                    value={formData.description}
-                    onChange={handleChange}
+                  <label htmlFor="companyName" className="text-sm font-medium">Raison sociale</label>
+                  <Input 
+                    id="companyName" 
+                    value={pme.companyName}
+                    onChange={(e) => setPme({...pme, companyName: e.target.value})}
+                    disabled={!isEditing}
                   />
                 </div>
-                
-                <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
-                  Enregistrer les modifications
-                </Button>
-              </form>
+                <div className="space-y-2">
+                  <label htmlFor="siret" className="text-sm font-medium">SIRET</label>
+                  <Input 
+                    id="siret" 
+                    value={pme.siret}
+                    onChange={(e) => setPme({...pme, siret: e.target.value})}
+                    disabled={!isEditing}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="contactPerson" className="text-sm font-medium">Personne de contact</label>
+                  <Input 
+                    id="contactPerson" 
+                    value={pme.contactPerson}
+                    onChange={(e) => setPme({...pme, contactPerson: e.target.value})}
+                    disabled={!isEditing}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="contactEmail" className="text-sm font-medium">Email de contact</label>
+                  <Input 
+                    id="contactEmail" 
+                    type="email"
+                    value={pme.contactEmail}
+                    onChange={(e) => setPme({...pme, contactEmail: e.target.value})}
+                    disabled={!isEditing}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="contactPhone" className="text-sm font-medium">Téléphone de contact</label>
+                  <Input 
+                    id="contactPhone" 
+                    value={pme.contactPhone}
+                    onChange={(e) => setPme({...pme, contactPhone: e.target.value})}
+                    disabled={!isEditing}
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="address" className="text-sm font-medium">Adresse</label>
+                <Textarea 
+                  id="address" 
+                  value={pme.address}
+                  onChange={(e) => setPme({...pme, address: e.target.value})}
+                  disabled={!isEditing}
+                  rows={3}
+                />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="description" className="text-sm font-medium">Description de l'activité</label>
+                <Textarea 
+                  id="description" 
+                  value={pme.description}
+                  onChange={(e) => setPme({...pme, description: e.target.value})}
+                  disabled={!isEditing}
+                  rows={4}
+                />
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -144,82 +152,111 @@ const Profile = () => {
             <CardHeader>
               <CardTitle>Documents légaux</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                <div className="bg-gray-50 p-6 border border-dashed rounded-lg flex flex-col items-center justify-center">
-                  <Upload className="h-10 w-10 text-gray-400 mb-2" />
-                  <p className="text-sm text-gray-600 mb-2">Déposez vos fichiers ici ou</p>
-                  <Button type="button" variant="outline" onClick={handleFileUpload}>
-                    Parcourir les fichiers
+            <CardContent className="space-y-4">
+              <div className="border rounded-md p-4 space-y-4">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h3 className="font-medium">Extrait KBIS</h3>
+                    <p className="text-sm text-gray-500">Validé le 15/04/2023</p>
+                  </div>
+                  <Button variant="outline" disabled={!isEditing} onClick={handleUpload}>
+                    <Upload className="mr-2 h-4 w-4" /> Remplacer
                   </Button>
-                  <p className="text-xs text-gray-400 mt-2">
-                    Formats acceptés : PDF, JPG, PNG. Max 10 Mo par fichier.
-                  </p>
                 </div>
-                
-                <div className="space-y-2">
-                  <h3 className="text-sm font-medium">Documents requis</h3>
-                  <ul className="space-y-2">
-                    <li className="p-3 bg-green-50 border border-green-100 rounded-md flex justify-between items-center">
-                      <div>
-                        <p className="text-sm font-medium">Extrait Kbis</p>
-                        <p className="text-xs text-gray-500">Téléchargé le 15/04/2025</p>
-                      </div>
-                      <div className="flex space-x-2">
-                        <Button variant="outline" size="sm">Voir</Button>
-                        <Button variant="outline" size="sm">Remplacer</Button>
-                      </div>
-                    </li>
-                    <li className="p-3 bg-green-50 border border-green-100 rounded-md flex justify-between items-center">
-                      <div>
-                        <p className="text-sm font-medium">RIB</p>
-                        <p className="text-xs text-gray-500">Téléchargé le 15/04/2025</p>
-                      </div>
-                      <div className="flex space-x-2">
-                        <Button variant="outline" size="sm">Voir</Button>
-                        <Button variant="outline" size="sm">Remplacer</Button>
-                      </div>
-                    </li>
-                    <li className="p-3 bg-yellow-50 border border-yellow-100 rounded-md flex justify-between items-center">
-                      <div>
-                        <p className="text-sm font-medium">Pièce d'identité du gérant</p>
-                        <p className="text-xs text-gray-500">En attente de validation</p>
-                      </div>
-                      <div className="flex space-x-2">
-                        <Button variant="outline" size="sm">Voir</Button>
-                        <Button variant="outline" size="sm">Remplacer</Button>
-                      </div>
-                    </li>
-                  </ul>
+              </div>
+              
+              <div className="border rounded-md p-4 space-y-4">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h3 className="font-medium">Statuts de l'entreprise</h3>
+                    <p className="text-sm text-gray-500">Validé le 15/04/2023</p>
+                  </div>
+                  <Button variant="outline" disabled={!isEditing} onClick={handleUpload}>
+                    <Upload className="mr-2 h-4 w-4" /> Remplacer
+                  </Button>
+                </div>
+              </div>
+              
+              <div className="border rounded-md p-4 space-y-4">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h3 className="font-medium">Bilans financiers</h3>
+                    <p className="text-sm text-gray-500">Validé le 15/04/2023</p>
+                  </div>
+                  <Button variant="outline" disabled={!isEditing} onClick={handleUpload}>
+                    <Upload className="mr-2 h-4 w-4" /> Remplacer
+                  </Button>
+                </div>
+              </div>
+              
+              <div className="border rounded-md p-4 space-y-4">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h3 className="font-medium">Pièce d'identité du dirigeant</h3>
+                    <p className="text-sm text-gray-500">Validé le 15/04/2023</p>
+                  </div>
+                  <Button variant="outline" disabled={!isEditing} onClick={handleUpload}>
+                    <Upload className="mr-2 h-4 w-4" /> Remplacer
+                  </Button>
                 </div>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
         
-        <TabsContent value="security">
+        <TabsContent value="banking">
           <Card>
             <CardHeader>
-              <CardTitle>Sécurité du compte</CardTitle>
+              <CardTitle>Informations bancaires</CardTitle>
             </CardHeader>
-            <CardContent>
-              <form className="space-y-4">
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="currentPassword">Mot de passe actuel</Label>
-                  <Input id="currentPassword" type="password" />
+                  <label htmlFor="bankName" className="text-sm font-medium">Banque</label>
+                  <Input 
+                    id="bankName" 
+                    value="Crédit Industriel"
+                    disabled={!isEditing}
+                  />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="newPassword">Nouveau mot de passe</Label>
-                  <Input id="newPassword" type="password" />
+                  <label htmlFor="accountNumber" className="text-sm font-medium">Numéro de compte</label>
+                  <Input 
+                    id="accountNumber" 
+                    value="FR76 XXXX XXXX XXXX XXXX"
+                    disabled={!isEditing}
+                  />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
-                  <Input id="confirmPassword" type="password" />
+                  <label htmlFor="bic" className="text-sm font-medium">BIC</label>
+                  <Input 
+                    id="bic" 
+                    value="CIDFFR21XXX"
+                    disabled={!isEditing}
+                  />
                 </div>
-                <Button type="button" onClick={() => toast.success("Mot de passe changé avec succès")} className="bg-blue-600 hover:bg-blue-700">
-                  Changer le mot de passe
-                </Button>
-              </form>
+                <div className="space-y-2">
+                  <label htmlFor="accountName" className="text-sm font-medium">Titulaire du compte</label>
+                  <Input 
+                    id="accountName" 
+                    value="TechSolutions SAS"
+                    disabled={!isEditing}
+                  />
+                </div>
+              </div>
+              
+              <div className="mt-4 flex items-center gap-2">
+                <FileText className="h-10 w-10 text-finance-blue" />
+                <div>
+                  <h3 className="font-medium">RIB enregistré</h3>
+                  <p className="text-sm text-gray-500">Validé le 15/04/2023</p>
+                </div>
+                {isEditing && (
+                  <Button variant="outline" className="ml-auto" onClick={handleUpload}>
+                    <Upload className="mr-2 h-4 w-4" /> Remplacer
+                  </Button>
+                )}
+              </div>
             </CardContent>
           </Card>
         </TabsContent>

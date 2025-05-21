@@ -21,6 +21,7 @@ import AdminClaims from "./pages/admin/Claims";
 import AdminTransactions from "./pages/admin/Transactions";
 import AdminNotifications from "./pages/admin/Notifications";
 import AdminSettings from "./pages/admin/Settings";
+import AdminProfile from "./pages/admin/Profile";
 
 // Pages PME
 import PMEDashboard from "./pages/pme/Dashboard";
@@ -111,6 +112,14 @@ const App = () => (
               element={
                 <AppLayout requiredRole="admin">
                   <AdminSettings />
+                </AppLayout>
+              } 
+            />
+            <Route 
+              path="/admin/profile" 
+              element={
+                <AppLayout requiredRole="admin">
+                  <AdminProfile />
                 </AppLayout>
               } 
             />

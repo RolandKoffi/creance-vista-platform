@@ -17,10 +17,14 @@ export interface PME {
   siret: string;
   address: string;
   contactPerson: string;
+  contactEmail: string;
+  contactPhone: string;
   phone: string;
   isVerified: boolean;
+  verifiedAt?: Date;
   createdAt: Date;
   documents: Document[];
+  description: string;
 }
 
 export interface Investor {
@@ -29,11 +33,18 @@ export interface Investor {
   firstName: string;
   lastName: string;
   idNumber: string;
+  email: string;
   phone: string;
   address: string;
   isVerified: boolean;
+  riskProfile: 'conservative' | 'moderate' | 'aggressive';
   createdAt: Date;
   documents: Document[];
+  preferences: {
+    notifyNewOpportunities: boolean;
+    notifyPayments: boolean;
+    marketingEmails: boolean;
+  };
 }
 
 export interface Document {
@@ -50,18 +61,28 @@ export interface Claim {
   pmeId: string;
   pmeName: string;
   title: string;
+  clientName: string;
   amount: number;
   dueDate: Date;
   description: string;
   documents: Document[];
-  status: 'pending' | 'active' | 'rejected' | 'completed' | 'expired';
+  status: 'pending' | 'active' | 'rejected' | 'completed' | 'expired' | 'repaid';
   createdAt: Date;
+  repaidAt?: Date;
   totalParts: number;
   soldParts: number;
   partPrice: number;
   riskLevel: 'low' | 'medium' | 'high';
   expectedReturn: number;
+  yield?: number;
   fundingProgress: number;  // percentage funded
+  fundsWithdrawn?: boolean;
+  investors?: Array<{
+    id: string;
+    amount: number;
+    investorId: string;
+    investorName: string;
+  }>;
 }
 
 export interface Investment {

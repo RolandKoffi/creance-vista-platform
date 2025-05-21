@@ -85,6 +85,11 @@ const Sidebar = () => {
       icon: <Settings size={20} />,
       path: "/admin/settings",
     },
+    {
+      title: "Profil",
+      icon: <User size={20} />,
+      path: "/admin/profile",
+    },
   ];
 
   const pmeMenuItems = [

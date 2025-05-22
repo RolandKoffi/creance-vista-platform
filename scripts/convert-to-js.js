@@ -19,11 +19,11 @@ fs.writeFileSync(path.join(process.cwd(), 'babel.config.json'), JSON.stringify(b
 
 // Fonction pour convertir un fichier .tsx en .jsx
 const convertTsxToJsx = (filePath) => {
-  const outputPath = filePath.replace(/\.tsx$/, '.jsx');
+  const outputPath = filePath.replace(/\.tsx$/, '.jsx').replace(/\.ts$/, '.js');
   console.log(`Conversion de ${filePath} vers ${outputPath}`);
   
   try {
-    const result = execSync(`npx babel ${filePath} --out-file ${outputPath} --extensions ".tsx"`, { 
+    const result = execSync(`npx babel ${filePath} --out-file ${outputPath} --extensions ".tsx,.ts"`, { 
       encoding: 'utf8',
       stdio: 'pipe'
     });

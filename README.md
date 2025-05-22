@@ -1,73 +1,69 @@
-# Welcome to your Lovable project
 
-## Project info
+# CreanceVista - Plateforme de gestion de créances
 
-**URL**: https://lovable.dev/projects/110dfd4f-cc81-48bd-b986-1f2184c83ea4
+## Introduction
 
-## How can I edit this code?
+CreanceVista est une application web responsive pour la gestion des créances, permettant aux PMEs de soumettre des factures et aux investisseurs de les financer.
 
-There are several ways of editing your application.
+## Fonctionnalités
 
-**Use Lovable**
+- Interface adaptative pour tous types d'écrans (desktop, tablette, mobile)
+- Tableau de bord personnalisé par rôle (administrateur, PME, investisseur)
+- Gestion de créances et transactions
+- Système de notifications
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/110dfd4f-cc81-48bd-b986-1f2184c83ea4) and start prompting.
+## Installation
 
-Changes made via Lovable will be committed automatically to this repo.
+```bash
+# Cloner le projet
+git clone [URL_DU_REPO]
 
-**Use your preferred IDE**
+# Installer les dépendances
+npm install
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Lancer l'application en mode développement
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## Version TypeScript vs JavaScript
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Cette application est développée avec TypeScript, mais peut être convertie en JavaScript classique.
 
-**Use GitHub Codespaces**
+### Conversion de TypeScript en JavaScript
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Pour convertir le projet de TypeScript (TSX) vers JavaScript (JSX), suivez ces étapes:
 
-## What technologies are used for this project?
+1. Exécutez le script de conversion:
 
-This project is built with:
+```bash
+node scripts/convert-to-js.js
+```
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+2. Une nouvelle version du projet en JavaScript sera créée dans le dossier `js-version`.
 
-## How can I deploy this project?
+3. Pour utiliser cette version:
 
-Simply open [Lovable](https://lovable.dev/projects/110dfd4f-cc81-48bd-b986-1f2184c83ea4) and click on Share -> Publish.
+```bash
+cd js-version
+npm install
+npm run dev
+```
 
-## Can I connect a custom domain to my Lovable project?
+## Structure du projet
 
-Yes, you can!
+```
+src/
+├── api/                # Services API pour la communication avec le backend
+├── components/         # Composants réutilisables
+├── hooks/              # Hooks personnalisés (useAuth, useIsMobile, etc.)
+├── pages/              # Pages de l'application par rôle
+├── types/              # Définitions de types TypeScript
+└── utils/              # Fonctions utilitaires
+```
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## Adaptabilité aux écrans
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+L'application est entièrement responsive et s'adapte aux différentes tailles d'écran:
+- Desktop: Affichage complet avec sidebar visible
+- Tablette: Affichage adapté avec sidebar rétractable
+- Mobile: Interface simplifiée avec menu hamburger

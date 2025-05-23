@@ -6,7 +6,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./hooks/useAuth";
 
-// Pages d'authentification
+// Pages d'authentification et landing page
+import LandingPage from "./pages/LandingPage";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 
@@ -51,7 +52,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Navigate to="/auth/login" replace />} />
+            <Route path="/" element={<LandingPage />} />
             <Route path="/auth/login" element={<Login />} />
             <Route path="/auth/register" element={<Register />} />
             

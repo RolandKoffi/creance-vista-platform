@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -43,8 +43,10 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-blue-600">FINCREDIBL</h1>
-          <p className="text-gray-600 mt-2">Plateforme de Cession de Créances</p>
+          <Link to="/" className="inline-block">
+            <h1 className="text-3xl font-bold text-blue-600">FINCREDIBL</h1>
+            <p className="text-gray-600 mt-2">Plateforme de Cession de Créances</p>
+          </Link>
         </div>
         
         <Card>
@@ -83,6 +85,11 @@ const Login = () => {
               <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
                 {isLoading ? 'Connexion en cours...' : 'Se connecter'}
               </Button>
+              <div className="mt-4 text-center">
+                <Link to="/" className="text-sm text-blue-600 hover:text-blue-800">
+                  Retour à la page d'accueil
+                </Link>
+              </div>
             </CardFooter>
           </form>
         </Card>

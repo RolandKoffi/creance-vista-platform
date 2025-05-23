@@ -2,14 +2,11 @@
 import { ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import Sidebar from './Sidebar';
-import TopBar from './TopBar';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { UserRole } from '@/types';
 
 interface AppLayoutProps {
   children: ReactNode;
-  requiredRole?: UserRole | UserRole[];
+  requiredRole?: string | string[];
 }
 
 const AppLayout = ({ children, requiredRole }: AppLayoutProps) => {
@@ -20,7 +17,7 @@ const AppLayout = ({ children, requiredRole }: AppLayoutProps) => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="animate-pulse text-finance-blue">Chargement...</div>
+        <div className="animate-pulse text-blue-600">Chargement...</div>
       </div>
     );
   }
@@ -32,7 +29,6 @@ const AppLayout = ({ children, requiredRole }: AppLayoutProps) => {
   if (requiredRole && user) {
     const roles = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
     if (!roles.includes(user.role)) {
-      // Redirection basée sur le rôle de l'utilisateur
       if (user.role === 'admin') {
         return <Navigate to="/admin/dashboard" replace />;
       } else if (user.role === 'pme') {
@@ -44,16 +40,32 @@ const AppLayout = ({ children, requiredRole }: AppLayoutProps) => {
   }
   
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
-      <Sidebar />
-      <div className={`flex-1 flex flex-col ${isMobile ? 'w-full' : ''}`}>
-        <TopBar />
-        <main className="p-4 md:p-6 flex-1 overflow-auto">
-          <div className="max-w-full mx-auto">
-            {children}
+    <div className="min-h-screen bg-gray-50">
+      <header className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center">
+              <h1 className="text-xl font-semibold text-blue-600">FINCREDIBL</h1>
+            </div>
+            <div className="flex items-center space-x-4">
+              <span className="text-sm text-gray-700">Bonjour, {user?.name}</span>
+              <button 
+                onClick={() => {
+                  localStorage.removeItem('user');
+                  window.location.href = '/auth/login';
+                }}
+                className="text-sm text-red-600 hover:text-red-800"
+              >
+                Déconnexion
+              </button>
+            </div>
           </div>
-        </main>
-      </div>
+        </div>
+      </header>
+      
+      <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        {children}
+      </main>
     </div>
   );
 };

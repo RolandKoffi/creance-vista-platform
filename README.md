@@ -1,23 +1,23 @@
 
-# CreanceVista - Plateforme de gestion de créances
+# FINCREDIBL - Plateforme de Cession de Créances
 
-## Introduction
+## Description
 
-CreanceVista est une application web responsive pour la gestion des créances, permettant aux PMEs de soumettre des factures et aux investisseurs de les financer.
+FINCREDIBL est une application web simplifiée pour la gestion des créances, permettant aux PMEs de soumettre des factures et aux investisseurs de les financer.
 
 ## Fonctionnalités
 
-- Interface adaptative pour tous types d'écrans (desktop, tablette, mobile)
-- Tableau de bord personnalisé par rôle (administrateur, PME, investisseur)
-- Gestion de créances et transactions
-- Système de notifications
+- 🔐 Authentification simple par rôle (Admin, PME, Investisseur)
+- 📊 Tableau de bord personnalisé selon le rôle utilisateur
+- 🏢 Gestion des créances pour les PMEs
+- 💰 Opportunités d'investissement pour les investisseurs
+- 📱 Interface responsive (desktop, tablette, mobile)
 
-## Installation
+## Installation et Démarrage
+
+### Version TypeScript (par défaut)
 
 ```bash
-# Cloner le projet
-git clone [URL_DU_REPO]
-
 # Installer les dépendances
 npm install
 
@@ -25,45 +25,81 @@ npm install
 npm run dev
 ```
 
-## Version TypeScript vs JavaScript
+### Conversion vers JavaScript
 
-Cette application est développée avec TypeScript, mais peut être convertie en JavaScript classique.
-
-### Conversion de TypeScript en JavaScript
-
-Pour convertir le projet de TypeScript (TSX) vers JavaScript (JSX), suivez ces étapes:
-
-1. Exécutez le script de conversion:
+Pour convertir automatiquement le projet de TypeScript vers JavaScript :
 
 ```bash
+# Exécuter le script de conversion
 node scripts/convert-to-js.js
-```
 
-2. Une nouvelle version du projet en JavaScript sera créée dans le dossier `js-version`.
-
-3. Pour utiliser cette version:
-
-```bash
+# Aller dans le dossier JavaScript généré
 cd js-version
+
+# Installer les dépendances
 npm install
+
+# Lancer l'application
 npm run dev
 ```
 
-## Structure du projet
+## Utilisateurs de Test
+
+| Rôle | Email | Mot de passe |
+|------|-------|--------------|
+| Admin | admin@fincredibl.com | password |
+| PME | contact@techpme.com | password |
+| Investisseur | jean.dupont@investisseur.com | password |
+
+## Structure Simplifiée
 
 ```
 src/
-├── api/                # Services API pour la communication avec le backend
-├── components/         # Composants réutilisables
-├── hooks/              # Hooks personnalisés (useAuth, useIsMobile, etc.)
-├── pages/              # Pages de l'application par rôle
-├── types/              # Définitions de types TypeScript
-└── utils/              # Fonctions utilitaires
+├── components/
+│   ├── ui/              # Composants d'interface
+│   └── layout/          # Layout de l'application
+├── data/
+│   └── simple-data.ts   # Données de test simplifiées
+├── hooks/
+│   ├── useAuth.tsx      # Gestion de l'authentification
+│   └── use-mobile.tsx   # Détection mobile
+├── pages/
+│   ├── auth/           # Pages d'authentification
+│   ├── Dashboard.tsx   # Dashboard unifié
+│   └── NotFound.tsx    # Page 404
+└── types/
+    └── index.ts        # Types TypeScript
 ```
 
-## Adaptabilité aux écrans
+## Caractéristiques de la Version Simplifiée
 
-L'application est entièrement responsive et s'adapte aux différentes tailles d'écran:
-- Desktop: Affichage complet avec sidebar visible
-- Tablette: Affichage adapté avec sidebar rétractable
-- Mobile: Interface simplifiée avec menu hamburger
+- ✅ Authentification basique avec localStorage
+- ✅ Données mockées intégrées
+- ✅ Interface unifiée et responsive
+- ✅ Navigation simplifiée
+- ✅ Code facilement convertible en JavaScript
+- ❌ Pas de base de données externe
+- ❌ Pas d'API backend complexe
+- ❌ Pas de gestion avancée des permissions
+
+## Technologies Utilisées
+
+- **Frontend**: React 18
+- **Bundler**: Vite
+- **Styling**: Tailwind CSS
+- **Components**: Shadcn/ui
+- **Routing**: React Router
+- **State**: React Hooks + Context API
+- **Notifications**: Sonner
+
+## Export et Personnalisation
+
+Cette version simplifiée peut facilement être :
+- Exportée vers GitHub
+- Convertie en HTML/CSS/JavaScript vanilla
+- Intégrée dans d'autres frameworks
+- Adaptée pour d'autres besoins
+
+## Support
+
+Pour toute question ou personnalisation, référez-vous à la documentation de chaque technologie utilisée ou contactez l'équipe de développement.

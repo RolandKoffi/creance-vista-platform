@@ -1,6 +1,12 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User } from '@/types';
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: 'admin' | 'pme' | 'investor';
+}
 
 interface AuthContextType {
   user: User | null;
@@ -23,7 +29,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Vérifier si l'utilisateur est déjà connecté (localStorage)
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       try {

@@ -3,83 +3,36 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-// Installer les dépendances nécessaires
-console.log('Installation des dépendances pour la conversion TS -> JS...');
-execSync('npm install --save-dev @babel/cli @babel/core @babel/preset-react @babel/preset-typescript', { stdio: 'inherit' });
+console.log('🚀 Début de la conversion TypeScript vers JavaScript...');
 
-// Configuration de Babel
+// Configuration de Babel pour une conversion plus propre
 const babelConfig = {
   "presets": [
     "@babel/preset-react",
-    ["@babel/preset-typescript", { "isTSX": true, "allExtensions": true }]
+    ["@babel/preset-typescript", { 
+      "isTSX": true, 
+      "allExtensions": true,
+      "allowDeclareFields": true
+    }]
+  ],
+  "plugins": [
+    ["@babel/plugin-transform-typescript", {
+      "allowDeclareFields": true
+    }]
   ]
 };
 
-fs.writeFileSync(path.join(process.cwd(), 'babel.config.json'), JSON.stringify(babelConfig, null, 2));
-
-// Fonction pour convertir un fichier .tsx en .jsx
-const convertTsxToJsx = (filePath) => {
-  const outputPath = filePath.replace(/\.tsx$/, '.jsx').replace(/\.ts$/, '.js');
-  console.log(`Conversion de ${filePath} vers ${outputPath}`);
-  
-  try {
-    const result = execSync(`npx babel ${filePath} --out-file ${outputPath} --extensions ".tsx,.ts"`, { 
-      encoding: 'utf8',
-      stdio: 'pipe'
-    });
-    
-    // Nettoyer les types dans le fichier de sortie
-    let content = fs.readFileSync(outputPath, 'utf8');
-    content = content
-      .replace(/:\s*React\.ReactNode/g, '')
-      .replace(/:\s*string/g, '')
-      .replace(/:\s*number/g, '')
-      .replace(/:\s*boolean/g, '')
-      .replace(/:\s*any/g, '')
-      .replace(/:\s*.*?\[\]/g, '')
-      .replace(/:\s*\{.*?\}/g, '')
-      .replace(/:\s*.*? =>/g, '')
-      .replace(/<.*?>/g, '');
-    
-    fs.writeFileSync(outputPath, content);
-    return outputPath;
-  } catch (error) {
-    console.error(`Erreur lors de la conversion de ${filePath}:`, error);
-    return null;
-  }
-};
-
-// Fonction pour parcourir récursivement les répertoires
-const processDirectory = (directory) => {
-  const files = fs.readdirSync(directory);
-  const jsxFiles = [];
-  
-  files.forEach(file => {
-    const filePath = path.join(directory, file);
-    const stats = fs.statSync(filePath);
-    
-    if (stats.isDirectory() && !filePath.includes('node_modules')) {
-      const childJsxFiles = processDirectory(filePath);
-      jsxFiles.push(...childJsxFiles);
-    } else if (stats.isFile() && (filePath.endsWith('.tsx') || filePath.endsWith('.ts'))) {
-      const jsxFile = convertTsxToJsx(filePath);
-      if (jsxFile) {
-        jsxFiles.push(jsxFile);
-      }
-    }
-  });
-  
-  return jsxFiles;
-};
-
-// Créer un répertoire 'js-version' pour stocker la version JavaScript
+// Créer le répertoire de sortie
 const jsVersionDir = path.join(process.cwd(), 'js-version');
-if (!fs.existsSync(jsVersionDir)) {
-  fs.mkdirSync(jsVersionDir);
+if (fs.existsSync(jsVersionDir)) {
+  fs.rmSync(jsVersionDir, { recursive: true, force: true });
 }
+fs.mkdirSync(jsVersionDir);
 
-// Copier d'abord les fichiers nécessaires
-const copyDirectory = (src, dest, excludeExt = ['.ts', '.tsx']) => {
+console.log('📁 Copie des fichiers statiques...');
+
+// Fonction pour copier les fichiers non-TS
+const copyStaticFiles = (src, dest) => {
   if (!fs.existsSync(dest)) {
     fs.mkdirSync(dest, { recursive: true });
   }
@@ -91,53 +44,138 @@ const copyDirectory = (src, dest, excludeExt = ['.ts', '.tsx']) => {
     const destPath = path.join(dest, entry.name);
     
     if (entry.isDirectory()) {
-      if (entry.name !== 'node_modules' && entry.name !== '.git') {
-        copyDirectory(srcPath, destPath, excludeExt);
+      if (!['node_modules', '.git', 'dist', 'build'].includes(entry.name)) {
+        copyStaticFiles(srcPath, destPath);
       }
     } else {
       const ext = path.extname(entry.name);
-      if (!excludeExt.includes(ext)) {
+      if (!['.ts', '.tsx'].includes(ext)) {
         fs.copyFileSync(srcPath, destPath);
       }
     }
   }
 };
 
-console.log('Copie des fichiers nécessaires vers js-version...');
-copyDirectory(path.join(process.cwd(), 'src'), path.join(jsVersionDir, 'src'));
-copyDirectory(path.join(process.cwd(), 'public'), path.join(jsVersionDir, 'public'));
+// Copier les fichiers statiques
+copyStaticFiles('.', jsVersionDir);
 
-// Copier les fichiers de configuration importants
-const configFiles = ['package.json', 'vite.config.js', 'index.html', 'tailwind.config.js', 'postcss.config.js'];
-configFiles.forEach(file => {
-  if (fs.existsSync(path.join(process.cwd(), file))) {
-    const dest = path.join(jsVersionDir, file);
-    fs.copyFileSync(path.join(process.cwd(), file), dest);
+console.log('🔄 Conversion des fichiers TypeScript...');
+
+// Écrire la configuration Babel
+fs.writeFileSync(path.join(jsVersionDir, 'babel.config.json'), JSON.stringify(babelConfig, null, 2));
+
+// Installer les dépendances nécessaires pour la conversion
+try {
+  console.log('📦 Installation des dépendances de conversion...');
+  execSync('npm install --save-dev @babel/cli @babel/core @babel/preset-react @babel/preset-typescript @babel/plugin-transform-typescript', { 
+    stdio: 'inherit',
+    cwd: jsVersionDir
+  });
+} catch (error) {
+  console.error('Erreur lors de l\'installation des dépendances:', error.message);
+  process.exit(1);
+}
+
+// Fonction pour convertir récursivement les fichiers
+const convertDirectory = (srcDir, destDir) => {
+  const files = fs.readdirSync(srcDir);
+  
+  files.forEach(file => {
+    const srcPath = path.join(srcDir, file);
+    const stats = fs.statSync(srcPath);
     
-    // Modifier package.json pour supprimer les dépendances TypeScript
-    if (file === 'package.json') {
-      const pkg = JSON.parse(fs.readFileSync(dest, 'utf8'));
-      delete pkg.devDependencies.typescript;
-      delete pkg.devDependencies['@types/react'];
-      delete pkg.devDependencies['@types/react-dom'];
-      fs.writeFileSync(dest, JSON.stringify(pkg, null, 2));
+    if (stats.isDirectory() && !['node_modules', '.git', 'dist', 'build'].includes(file)) {
+      const destDirPath = path.join(destDir, file);
+      if (!fs.existsSync(destDirPath)) {
+        fs.mkdirSync(destDirPath, { recursive: true });
+      }
+      convertDirectory(srcPath, destDirPath);
+    } else if (file.endsWith('.tsx') || file.endsWith('.ts')) {
+      const outputExt = file.endsWith('.tsx') ? '.jsx' : '.js';
+      const outputPath = path.join(destDir, file.replace(/\.tsx?$/, outputExt));
+      
+      try {
+        console.log(`🔧 Conversion: ${srcPath} → ${outputPath}`);
+        
+        // Utiliser Babel pour convertir
+        const result = execSync(`npx babel "${srcPath}" --out-file "${outputPath}" --extensions ".tsx,.ts"`, {
+          encoding: 'utf8',
+          cwd: jsVersionDir,
+          stdio: 'pipe'
+        });
+        
+        // Nettoyer le fichier converti
+        if (fs.existsSync(outputPath)) {
+          let content = fs.readFileSync(outputPath, 'utf8');
+          
+          // Supprimer les annotations de type
+          content = content
+            .replace(/:\s*React\.ReactNode/g, '')
+            .replace(/:\s*React\.FC<[^>]*>/g, '')
+            .replace(/:\s*FC<[^>]*>/g, '')
+            .replace(/:\s*string\s*[;,)}\]\r\n]/g, (match) => match.replace(/:\s*string/, ''))
+            .replace(/:\s*number\s*[;,)}\]\r\n]/g, (match) => match.replace(/:\s*number/, ''))
+            .replace(/:\s*boolean\s*[;,)}\]\r\n]/g, (match) => match.replace(/:\s*boolean/, ''))
+            .replace(/:\s*any\s*[;,)}\]\r\n]/g, (match) => match.replace(/:\s*any/, ''))
+            .replace(/:\s*void\s*[;,)}\]\r\n]/g, (match) => match.replace(/:\s*void/, ''))
+            .replace(/interface\s+\w+\s*\{[^}]*\}/gs, '')
+            .replace(/export\s+interface\s+\w+\s*\{[^}]*\}/gs, '')
+            .replace(/type\s+\w+\s*=\s*[^;]+;/g, '')
+            .replace(/export\s+type\s+\w+\s*=\s*[^;]+;/g, '')
+            .replace(/<[^>]*>/g, '');
+          
+          fs.writeFileSync(outputPath, content);
+        }
+        
+      } catch (error) {
+        console.error(`❌ Erreur lors de la conversion de ${srcPath}:`, error.message);
+      }
     }
-    
-    // Modifier vite.config.js pour supprimer la référence à TypeScript
-    if (file === 'vite.config.js' || file === 'vite.config.ts') {
-      let content = fs.readFileSync(dest, 'utf8');
-      content = content.replace(/import typescript.*/g, '');
-      fs.writeFileSync(dest, content);
-    }
+  });
+};
+
+// Convertir les fichiers source
+convertDirectory('src', path.join(jsVersionDir, 'src'));
+
+console.log('📝 Mise à jour du package.json...');
+
+// Modifier le package.json
+const packageJsonPath = path.join(jsVersionDir, 'package.json');
+if (fs.existsSync(packageJsonPath)) {
+  const pkg = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+  
+  // Supprimer les dépendances TypeScript
+  if (pkg.devDependencies) {
+    delete pkg.devDependencies.typescript;
+    delete pkg.devDependencies['@types/react'];
+    delete pkg.devDependencies['@types/react-dom'];
+    delete pkg.devDependencies['@typescript-eslint/eslint-plugin'];
+    delete pkg.devDependencies['@typescript-eslint/parser'];
+  }
+  
+  fs.writeFileSync(packageJsonPath, JSON.stringify(pkg, null, 2));
+}
+
+// Supprimer les fichiers TypeScript de configuration
+const filesToRemove = [
+  'tsconfig.json',
+  'tsconfig.app.json', 
+  'tsconfig.node.json',
+  'babel.config.json'
+];
+
+filesToRemove.forEach(file => {
+  const filePath = path.join(jsVersionDir, file);
+  if (fs.existsSync(filePath)) {
+    fs.unlinkSync(filePath);
   }
 });
 
-// Commencer la conversion
-console.log('Conversion des fichiers TS/TSX en JS/JSX...');
-const srcDir = path.join(jsVersionDir, 'src');
-const jsxFiles = processDirectory(srcDir);
-
-console.log('Conversion terminée!');
-console.log(`${jsxFiles.length} fichiers ont été convertis en JavaScript.`);
-console.log(`La version JavaScript du projet se trouve dans le répertoire 'js-version'.`);
-console.log(`Pour l'utiliser, exécutez 'cd js-version && npm install && npm run dev'`);
+console.log('✅ Conversion terminée avec succès !');
+console.log('');
+console.log('📋 Instructions pour utiliser la version JavaScript :');
+console.log('1. cd js-version');
+console.log('2. npm install');
+console.log('3. npm run dev');
+console.log('');
+console.log('🎉 Votre application est maintenant convertie en JavaScript !');

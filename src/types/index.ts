@@ -1,13 +1,13 @@
 
 export interface User {
   id: string;
-  name: string;
   email: string;
+  name: string;
   role: 'admin' | 'pme' | 'investor';
-  password?: string;
+  createdAt: Date;
+  isVerified: boolean;
+  lastLoginAt?: Date;
 }
-
-export type UserRole = 'admin' | 'pme' | 'investor';
 
 export interface PME {
   id: string;
@@ -16,14 +16,16 @@ export interface PME {
   siret: string;
   address: string;
   contactPerson: string;
-  phone: string;
   contactEmail: string;
   contactPhone: string;
+  phone: string;
   description: string;
   isVerified: boolean;
+  verificationDate?: Date;
+  status: 'pending' | 'verified' | 'rejected' | 'suspended';
   createdAt: Date;
-  documents?: Document[];
-  verifiedAt?: Date;
+  updatedAt: Date;
+  documents: Document[];
 }
 
 export interface Investor {
@@ -31,15 +33,24 @@ export interface Investor {
   userId: string;
   firstName: string;
   lastName: string;
+  idNumber: string;
   email: string;
   phone: string;
   address: string;
   riskProfile: 'conservative' | 'moderate' | 'aggressive';
-  preferences: string[];
   isVerified: boolean;
+  verificationDate?: Date;
+  status: 'pending' | 'verified' | 'rejected';
+  totalInvested: number;
+  portfolioValue: number;
   createdAt: Date;
-  idNumber?: string;
-  documents?: Document[];
+  updatedAt: Date;
+  preferences: {
+    notifyNewOpportunities: boolean;
+    notifyPayments: boolean;
+    marketingEmails: boolean;
+  };
+  documents: Document[];
 }
 
 export interface Claim {
@@ -47,50 +58,63 @@ export interface Claim {
   pmeId: string;
   pmeName: string;
   title: string;
+  clientName: string;
   amount: number;
   dueDate: Date;
   description: string;
-  clientName: string;
-  status: 'pending' | 'active' | 'funded' | 'completed' | 'repaid';
-  createdAt: Date;
+  status: 'pending' | 'approved' | 'rejected' | 'funded' | 'closed';
   riskLevel: 'low' | 'medium' | 'high';
   expectedReturn: number;
-  partPrice: number;
   totalParts: number;
-  soldParts: number;
-  fundingProgress: number;
-  documents?: Document[];
-  investors?: string[];
-  fundsWithdrawn?: boolean;
-  repaidAt?: Date;
-  yield?: number;
+  availableParts: number;
+  partPrice: number;
+  submissionDate: Date;
+  approvalDate?: Date;
+  documents: Document[];
+  investments: Investment[];
 }
 
 export interface Investment {
   id: string;
   investorId: string;
+  investor: {
+    name: string;
+  };
   claimId: string;
-  pmeId: string;
+  claim: {
+    title: string;
+    pmeName: string;
+  };
   amount: number;
   parts: number;
+  date: Date;
+  status: 'pending' | 'confirmed' | 'paid' | 'completed';
   expectedReturn: number;
-  expectedPaymentDate: Date;
-  status: 'active' | 'completed' | 'cancelled';
-  createdAt: Date;
+  actualReturn?: number;
+  paymentMethod: 'card' | 'mobile_money' | 'bank_transfer';
 }
 
 export interface Transaction {
   id: string;
-  userId: string;
-  type: 'investment' | 'disbursement' | 'repayment';
+  userId?: string;
+  type: 'investment' | 'payment' | 'refund' | 'fee';
   amount: number;
   date: Date;
-  status: 'pending' | 'completed' | 'failed';
+  status: 'pending' | 'completed' | 'failed' | 'cancelled';
   from: string;
   to: string;
   description: string;
   reference: string;
   notes?: string;
+}
+
+export interface Document {
+  id: string;
+  name: string;
+  type: string;
+  url: string;
+  uploadDate: Date;
+  status: 'pending' | 'verified' | 'rejected';
 }
 
 export interface Notification {
@@ -99,14 +123,16 @@ export interface Notification {
   title: string;
   message: string;
   type: 'info' | 'success' | 'warning' | 'error';
-  isRead: boolean;
-  createdAt: Date;
+  read: boolean;
+  date: Date;
+  actionUrl?: string;
 }
 
-export interface Document {
-  id: string;
-  name: string;
-  type: string;
-  url: string;
-  uploadedAt: Date;
+export interface DashboardStats {
+  totalPMEs: number;
+  totalInvestors: number;
+  totalClaims: number;
+  totalInvestments: number;
+  totalAmount: number;
+  pendingVerifications: number;
 }

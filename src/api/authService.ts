@@ -2,6 +2,7 @@
 import { apiPost, apiGet } from './apiClient';
 import { API_URLS } from './config';
 import { User } from '@/types';
+import { ApiResponse } from './templates/baseTemplate';
 
 export interface LoginRequest {
   email: string;
@@ -43,10 +44,19 @@ export const register = async (userData: RegisterRequest): Promise<AuthResponse>
 };
 
 export const logout = async (): Promise<void> => {
-  await apiGet(API_URLS.LOGOUT);
+  await apiPost(API_URLS.LOGOUT, {});
   localStorage.removeItem('authToken');
 };
 
 export const getCurrentUser = async (): Promise<User> => {
-  return await apiGet<User>(API_URLS.USER_PROFILE);
+  const response = await apiGet<ApiResponse<User>>(API_URLS.USER_PROFILE);
+  return response.data || response as any;
+};
+
+export const refreshToken = async (): Promise<string> => {
+  const response = await apiPost<{ token: string }>(`${API_URLS.LOGIN}/refresh`, {});
+  if (response.token) {
+    localStorage.setItem('authToken', response.token);
+  }
+  return response.token;
 };

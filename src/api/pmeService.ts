@@ -22,7 +22,7 @@ export const getPMECreances = async (): Promise<Creance[]> => {
   return await apiGet<Creance[]>(API_URLS.PME_CREANCES);
 };
 
-export const uploadCreanceDocument = async (creanceId: string, file: File, typeDocument?: string): Promise<Fichier> => {
+export const uploadPMECreanceDocument = async (creanceId: string, file: File, typeDocument?: string): Promise<Fichier> => {
   return await uploadFile<Fichier>(API_URLS.PME_CREANCE_UPLOAD(creanceId), file, {
     type_fichier: typeDocument
   });

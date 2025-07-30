@@ -1,37 +1,35 @@
 
-import { usePMEHooks, useInvestorHooks, useClaimHooks, useInvestmentHooks, useTransactionHooks, useNotificationHooks, usePMEActions, useInvestorActions } from '@/api/templates/hookTemplates';
+import { usePMEHooks, useInvestisseurHooks, useCreanceHooks, useAchatPartsHooks, useNotificationHooks, usePMEActions, useCreanceActions } from '@/api/templates/hookTemplates';
 
 // Export all hooks for easy access
 export const useApi = () => {
   const pmeHooks = usePMEHooks();
-  const investorHooks = useInvestorHooks();
-  const claimHooks = useClaimHooks();
-  const investmentHooks = useInvestmentHooks();
-  const transactionHooks = useTransactionHooks();
+  const investisseurHooks = useInvestisseurHooks();
+  const creanceHooks = useCreanceHooks();
+  const achatPartsHooks = useAchatPartsHooks();
   const notificationHooks = useNotificationHooks();
   
   const pmeActions = usePMEActions();
-  const investorActions = useInvestorActions();
+  const creanceActions = useCreanceActions();
 
   return {
     // CRUD operations
     pmes: pmeHooks,
-    investors: investorHooks,
-    claims: claimHooks,
-    investments: investmentHooks,
-    transactions: transactionHooks,
+    investisseurs: investisseurHooks,
+    creances: creanceHooks,
+    achats: achatPartsHooks,
     notifications: notificationHooks,
     
     // Specific actions
     actions: {
       pme: pmeActions,
-      investor: investorActions,
+      creance: creanceActions,
     }
   };
 };
 
 // Example usage hook
-export const useEntityManager = <T>(entityType: 'pmes' | 'investors' | 'claims' | 'investments' | 'transactions' | 'notifications') => {
+export const useEntityManager = <T>(entityType: 'pmes' | 'investisseurs' | 'creances' | 'achats' | 'notifications') => {
   const api = useApi();
   
   return {

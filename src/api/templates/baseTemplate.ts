@@ -27,7 +27,7 @@ export interface QueryParams {
 
 // Generic CRUD operations template
 export class BaseApiService<T, CreateT = Partial<T>, UpdateT = Partial<T>> {
-  constructor(private baseUrl: string) {}
+  constructor(protected baseUrl: string) {}
 
   async getAll(params?: QueryParams): Promise<PaginatedResponse<T>> {
     const queryString = params ? new URLSearchParams(params as any).toString() : '';

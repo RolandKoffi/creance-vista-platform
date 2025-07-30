@@ -1,132 +1,139 @@
 
 export interface User {
-  id: string;
+  id: number;
   email: string;
-  name: string;
-  role: 'admin' | 'pme' | 'investor';
-  createdAt: Date;
-  isVerified: boolean;
-  lastLoginAt?: Date;
+  role: 'admin' | 'pme' | 'investisseur';
+  is_active: boolean;
+  last_login?: Date;
+  is_deleted: boolean;
+  created_at: Date;
+  updated_at?: Date;
 }
 
 export interface PME {
-  id: string;
-  userId: string;
-  companyName: string;
-  siret: string;
-  address: string;
-  contactPerson: string;
-  contactEmail: string;
-  contactPhone: string;
-  phone: string;
-  description: string;
-  isVerified: boolean;
-  verificationDate?: Date;
-  status: 'pending' | 'verified' | 'rejected' | 'suspended';
-  createdAt: Date;
-  updatedAt: Date;
-  documents: Document[];
+  id: number;
+  user_id: number;
+  nom_entreprise: string;
+  secteur_activite?: string;
+  telephone?: string;
+  adresse?: string;
+  pays?: string;
+  compte_bancaire?: string;
+  statut_validation?: 'en_attente' | 'valide' | 'rejete';
+  raison_rejet?: string;
+  is_deleted: boolean;
+  created_at: Date;
+  updated_at?: Date;
 }
 
-export interface Investor {
-  id: string;
-  userId: string;
-  firstName: string;
-  lastName: string;
-  idNumber: string;
-  email: string;
-  phone: string;
-  address: string;
-  riskProfile: 'conservative' | 'moderate' | 'aggressive';
-  isVerified: boolean;
-  verificationDate?: Date;
-  status: 'pending' | 'verified' | 'rejected';
-  totalInvested: number;
-  portfolioValue: number;
-  createdAt: Date;
-  updatedAt: Date;
-  preferences: {
-    notifyNewOpportunities: boolean;
-    notifyPayments: boolean;
-    marketingEmails: boolean;
-  };
-  documents: Document[];
+export interface Investisseur {
+  id: number;
+  user_id: number;
+  nom_complet?: string;
+  genre?: string;
+  pays?: string;
+  ville?: string;
+  telephone?: string;
+  is_deleted: boolean;
+  created_at: Date;
+  updated_at?: Date;
 }
 
-export interface Claim {
-  id: string;
-  pmeId: string;
-  pmeName: string;
-  title: string;
-  clientName: string;
-  amount: number;
-  dueDate: Date;
-  description: string;
-  status: 'pending' | 'approved' | 'rejected' | 'funded' | 'closed';
-  riskLevel: 'low' | 'medium' | 'high';
-  expectedReturn: number;
-  totalParts: number;
-  availableParts: number;
-  partPrice: number;
-  submissionDate: Date;
-  approvalDate?: Date;
-  documents: Document[];
-  investments: Investment[];
+export interface Creance {
+  id: number;
+  pme_id: number;
+  numero_compte?: string;
+  client_nom?: string;
+  email_client?: string;
+  contact_client?: string;
+  description?: string;
+  montant_total: number;
+  nombre_parts: number;
+  montant_par_part: number;
+  echeance: Date;
+  statut?: 'attente' | 'valide' | 'rejetee' | 'annulee' | 'vendue';
+  statut_retrait?: 'en_attente' | 'effectue';
+  date_retrait?: Date;
+  date_validation?: Date;
+  date_annulation?: Date;
+  is_deleted: boolean;
+  created_at: Date;
+  updated_at?: Date;
 }
 
-export interface Investment {
-  id: string;
-  investorId: string;
-  investor: {
-    name: string;
-  };
-  claimId: string;
-  claim: {
-    title: string;
-    pmeName: string;
-  };
-  amount: number;
-  parts: number;
-  date: Date;
-  status: 'pending' | 'confirmed' | 'paid' | 'completed';
-  expectedReturn: number;
-  actualReturn?: number;
-  paymentMethod: 'card' | 'mobile_money' | 'bank_transfer';
+export interface AchatParts {
+  id: number;
+  investisseur_id: number;
+  creance_id: number;
+  nombre_parts: number;
+  montant_total: number;
+  methode_paiement?: string;
+  statut_paiement?: 'en_attente' | 'valide' | 'echoue';
+  url_recu?: string;
+  date_achat: Date;
+  is_deleted: boolean;
+  created_at: Date;
+  updated_at?: Date;
 }
 
-export interface Transaction {
-  id: string;
-  userId?: string;
-  type: 'investment' | 'payment' | 'refund' | 'fee';
-  amount: number;
-  date: Date;
-  status: 'pending' | 'completed' | 'failed' | 'cancelled';
-  from: string;
-  to: string;
-  description: string;
-  reference: string;
-  notes?: string;
+export interface Remboursement {
+  id: number;
+  creance_id: number;
+  date_reception_fonds?: Date;
+  montant_total_recu?: number;
+  statut_distribution?: string;
+  date_distribution?: Date;
+  created_at: Date;
+  updated_at?: Date;
 }
 
-export interface Document {
-  id: string;
-  name: string;
-  type: string;
-  url: string;
-  uploadDate: Date;
-  status: 'pending' | 'verified' | 'rejected';
+export interface RemboursementInvestisseur {
+  id: number;
+  remboursement_id: number;
+  investisseur_id: number;
+  montant_envoye?: number;
+  statut: 'en_attente' | 'reclame' | 'envoye';
+  date_reclamation?: Date;
+  date_envoi: Date;
+  created_at: Date;
+  updated_at?: Date;
 }
 
 export interface Notification {
-  id: string;
-  userId: string;
-  title: string;
-  message: string;
-  type: 'info' | 'success' | 'warning' | 'error';
-  read: boolean;
-  date: Date;
-  actionUrl?: string;
+  id: number;
+  user_id?: number;
+  contenu?: string;
+  type?: string;
+  vue: boolean;
+  created_at: Date;
 }
+
+export interface Fichier {
+  id: number;
+  owner_id?: number;
+  creance_id?: number;
+  nom_fichier?: string;
+  url?: string;
+  type_fichier?: string;
+  owner_profil?: 'pme' | 'investisseur';
+  created_at: Date;
+  updated_at?: Date;
+  is_deleted: boolean;
+}
+
+export interface LogUtilisateur {
+  id: number;
+  user_id: number;
+  action: string;
+  timestamp: Date;
+}
+
+// Legacy interfaces for backward compatibility
+export interface Investment extends AchatParts {}
+export interface Claim extends Creance {}
+export interface Investor extends Investisseur {}
+export interface Document extends Fichier {}
+export interface Transaction extends LogUtilisateur {}
 
 export interface DashboardStats {
   totalPMEs: number;

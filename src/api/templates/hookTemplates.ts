@@ -1,14 +1,13 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { PMEService, InvestorService, ClaimService, InvestmentService, TransactionService, NotificationService } from './entityTemplates';
+import { PMEService, InvestisseurService, CreanceService, AchatPartsService, NotificationService } from './entityTemplates';
 
 // Service instances
 const pmeService = new PMEService();
-const investorService = new InvestorService();
-const claimService = new ClaimService();
-const investmentService = new InvestmentService();
-const transactionService = new TransactionService();
+const investisseurService = new InvestisseurService();
+const creanceService = new CreanceService();
+const achatPartsService = new AchatPartsService();
 const notificationService = new NotificationService();
 
 // Generic hook template for CRUD operations
@@ -89,10 +88,9 @@ export const createCrudHooks = <T>(
 
 // Specific hooks for each entity
 export const usePMEHooks = () => createCrudHooks(pmeService, 'PME', 'pmes');
-export const useInvestorHooks = () => createCrudHooks(investorService, 'Investisseur', 'investors');
-export const useClaimHooks = () => createCrudHooks(claimService, 'Créance', 'claims');
-export const useInvestmentHooks = () => createCrudHooks(investmentService, 'Investissement', 'investments');
-export const useTransactionHooks = () => createCrudHooks(transactionService, 'Transaction', 'transactions');
+export const useInvestisseurHooks = () => createCrudHooks(investisseurService, 'Investisseur', 'investisseurs');
+export const useCreanceHooks = () => createCrudHooks(creanceService, 'Créance', 'creances');
+export const useAchatPartsHooks = () => createCrudHooks(achatPartsService, 'Achat', 'achats');
 export const useNotificationHooks = () => createCrudHooks(notificationService, 'Notification', 'notifications');
 
 // Custom hooks for specific operations
@@ -118,24 +116,24 @@ export const usePMEActions = () => {
   return { verify, reject };
 };
 
-export const useInvestorActions = () => {
+export const useCreanceActions = () => {
   const queryClient = useQueryClient();
 
-  const verify = useMutation({
-    mutationFn: (id: string) => investorService.verify(id),
+  const valider = useMutation({
+    mutationFn: (id: string) => creanceService.valider(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['investors'] });
-      toast.success('Investisseur vérifié avec succès');
+      queryClient.invalidateQueries({ queryKey: ['creances'] });
+      toast.success('Créance validée avec succès');
     },
   });
 
-  const reject = useMutation({
-    mutationFn: ({ id, reason }: { id: string; reason?: string }) => investorService.reject(id, reason),
+  const rejeter = useMutation({
+    mutationFn: ({ id, reason }: { id: string; reason?: string }) => creanceService.rejeter(id, reason),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['investors'] });
-      toast.success('Investisseur rejeté');
+      queryClient.invalidateQueries({ queryKey: ['creances'] });
+      toast.success('Créance rejetée');
     },
   });
 
-  return { verify, reject };
+  return { valider, rejeter };
 };

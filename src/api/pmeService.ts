@@ -1,51 +1,41 @@
-
-import { apiGet, apiPost, apiPut, apiPatch, uploadFile } from './apiClient';
+import { apiGet, apiPost, uploadFile } from './apiClient';
 import { API_URLS } from './config';
-import { PME, Document } from '@/types';
+import { Creance, Fichier } from '@/types';
 
-export interface PMERegistrationData {
-  companyName: string;
-  siret: string;
-  address: string;
-  contactPerson: string;
-  contactEmail: string;
-  contactPhone: string;
-  phone: string;
-  description: string;
+export interface CreanceCreationData {
+  numero_compte?: string;
+  client_nom: string;
+  email_client?: string;
+  contact_client?: string;
+  description?: string;
+  montant_total: number;
+  nombre_parts: number;
+  montant_par_part: number;
+  echeance: Date | string;
 }
 
-export const getAllPMEs = async (): Promise<PME[]> => {
-  return await apiGet<PME[]>(API_URLS.PMES);
+export const createCreance = async (creanceData: CreanceCreationData): Promise<Creance> => {
+  return await apiPost<Creance>(API_URLS.PME_CREANCE_CREATE, creanceData);
 };
 
-export const getPMEById = async (id: string): Promise<PME> => {
-  return await apiGet<PME>(API_URLS.PME_DETAILS(id));
+export const getPMECreances = async (): Promise<Creance[]> => {
+  return await apiGet<Creance[]>(API_URLS.PME_CREANCES);
 };
 
-export const createPME = async (pmeData: PMERegistrationData): Promise<PME> => {
-  return await apiPost<PME>(API_URLS.PMES, pmeData);
-};
-
-export const updatePME = async (id: string, pmeData: Partial<PMERegistrationData>): Promise<PME> => {
-  return await apiPut<PME>(API_URLS.PME_DETAILS(id), pmeData);
-};
-
-export const verifyPME = async (id: string): Promise<PME> => {
-  return await apiPatch<PME>(API_URLS.PME_VERIFY(id), {});
-};
-
-export const rejectPME = async (id: string, reason?: string): Promise<PME> => {
-  return await apiPatch<PME>(API_URLS.PME_REJECT(id), { reason });
-};
-
-export const suspendPME = async (id: string, reason?: string): Promise<PME> => {
-  return await apiPatch<PME>(API_URLS.PME_SUSPEND(id), { reason });
-};
-
-export const uploadPMEDocument = async (pmeId: string, file: File, documentType: string): Promise<Document> => {
-  return await uploadFile<Document>(API_URLS.DOCUMENT_UPLOAD, file, {
-    entityId: pmeId,
-    entityType: 'pme',
-    documentType
+export const uploadCreanceDocument = async (creanceId: string, file: File, typeDocument?: string): Promise<Fichier> => {
+  return await uploadFile<Fichier>(API_URLS.PME_CREANCE_UPLOAD(creanceId), file, {
+    type_fichier: typeDocument
   });
+};
+
+export const getCreanceFiles = async (creanceId: string): Promise<Fichier[]> => {
+  return await apiGet<Fichier[]>(API_URLS.PME_CREANCE_FILES(creanceId));
+};
+
+export const getCreanceReceipt = async (creanceId: string): Promise<Blob> => {
+  return await apiGet<Blob>(API_URLS.PME_CREANCE_RECEIPT(creanceId));
+};
+
+export const retirerFonds = async (creanceId: string): Promise<any> => {
+  return await apiPost<any>(API_URLS.PME_CREANCE_RETIRER(creanceId), {});
 };
